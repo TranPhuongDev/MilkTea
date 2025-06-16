@@ -8,9 +8,9 @@ import { comparePasswordUtil } from 'src/utils/bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import {
   ChangePassword,
-  CodeAuthDto,
-  CreateAuthDto,
-} from './dto/create-auth.dto';
+  CodeEmailDto,
+  CreateUserDto,
+} from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthsService {
@@ -31,12 +31,11 @@ export class AuthsService {
   async login(user: any) {
     const payload = {
       email: user.email,
-      userName: user.userName,
-      lastName: user.lastName,
     };
 
     // check active của user
     const checkUser = await this.usersService.findUserByEmail(user.email);
+
     if (!checkUser.isActive) {
       throw new BadRequestException('Vui lòng kích hoạt tài khoản');
     }
@@ -47,12 +46,12 @@ export class AuthsService {
     };
   }
 
-  async register(registerDto: CreateAuthDto) {
+  async register(registerDto: CreateUserDto) {
     return await this.usersService.registerUser(registerDto);
   }
 
-  checkCode = async (codeAuthDto: CodeAuthDto) => {
-    return await this.usersService.handleActive(codeAuthDto);
+  checkCode = async (codeEmailDto: CodeEmailDto) => {
+    return await this.usersService.handleActive(codeEmailDto);
   };
 
   // gửi lại codeID

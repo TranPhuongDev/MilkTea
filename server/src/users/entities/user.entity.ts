@@ -1,27 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Review } from 'src/reviews/entities/review.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
+enum Role {
+  Admin,
+  User,
+  Guest,
+}
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  userId: number;
 
-  @ApiProperty({ example: 'admin.manager' })
   @Column()
-  userName: string;
+  username: string;
 
-  @ApiProperty({ example: 'admin@example.com' })
   @Column({ unique: true }) // Đảm bảo email là duy nhất
   email: string;
 
   @Column()
   password: string;
 
-  @ApiProperty({ example: 'Admin' })
   @Column({ nullable: true })
   firstName: string;
 
-  @ApiProperty({ example: 'Manager' })
   @Column({ nullable: true })
   lastName: string;
 
@@ -31,11 +34,8 @@ export class User {
   @Column({ default: false })
   isActive: boolean;
 
-  @Column({ default: 'User' })
+  @Column({ type: 'enum', enum: Role, default: Role.User })
   role: string;
-
-  @Column({ default: 'Local' })
-  accountType: string;
 
   @Column({ nullable: true })
   codeId: string;
@@ -52,4 +52,7 @@ export class User {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 }

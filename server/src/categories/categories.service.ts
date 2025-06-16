@@ -47,7 +47,7 @@ export class CategoriesService {
 
   async findID(id: number) {
     const findCate = await this.categoryRepository.findOne({
-      where: { categoryID: id },
+      where: { categoryId: id },
       relations: ['productID'],
     });
 
@@ -58,7 +58,7 @@ export class CategoriesService {
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const findCate = await this.categoryRepository.findOne({
-      where: { categoryID: id },
+      where: { categoryId: id },
     });
 
     if (!findCate) {
@@ -98,7 +98,7 @@ export class CategoriesService {
   }
 
   async remove(id: number) {
-    const cate = await this.categoryRepository.findOneBy({ categoryID: id });
+    const cate = await this.categoryRepository.findOneBy({ categoryId: id });
     if (!cate) {
       throw new BadRequestException(`Danh mục ${id} không tìm thấy`);
     }

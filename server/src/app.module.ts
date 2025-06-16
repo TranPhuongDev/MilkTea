@@ -13,8 +13,18 @@ import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
 import { ProductsModule } from './products/products.module';
 import { Product } from './products/entities/product.entity';
-import { CustomersModule } from './customers/customers.module';
-import { Customer } from './customers/entities/customer.entity';
+import { OptionsModule } from './options/options.module';
+import { OptionvaluesModule } from './optionvalues/optionvalues.module';
+import { TablesModule } from './tables/tables.module';
+import { DineinordersModule } from './dineinorders/dineinorders.module';
+import { DineinorderitemsModule } from './dineinorderitems/dineinorderitems.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Table } from './tables/entities/table.entity';
+import { OptionValue } from './optionvalues/entities/optionvalue.entity';
+import { DineInOrderItem } from './dineinorderitems/entities/dineinorderitem.entity';
+import { DineInOrder } from './dineinorders/entities/dineinorder.entity';
+import { Option } from './options/entities/option.entity';
+import { Review } from './reviews/entities/review.entity';
 
 @Module({
   imports: [
@@ -25,12 +35,22 @@ import { Customer } from './customers/entities/customer.entity';
       username: 'root',
       password: '123456',
       database: 'milktea',
-      entities: [User, Category, Product, Customer], // Đường dẫn đến các entity của bạn
+      entities: [
+        User,
+        Category,
+        Product,
+        Table,
+        DineInOrderItem,
+        DineInOrder,
+        OptionValue,
+        Option,
+        Review,
+      ], // Đường dẫn đến các entity của bạn
       synchronize: true, // Chỉ sử dụng trong môi trường phát triển
       autoLoadEntities: true,
     }),
 
-    TypeOrmModule.forFeature([User, Category, Product, Customer]),
+    TypeOrmModule.forFeature([User, Category, Product]),
 
     UsersModule,
     AuthsModule,
@@ -63,7 +83,17 @@ import { Customer } from './customers/entities/customer.entity';
     CategoriesModule,
     ProductsModule,
 
-    CustomersModule,
+    OptionsModule,
+
+    OptionvaluesModule,
+
+    TablesModule,
+
+    DineinordersModule,
+
+    DineinorderitemsModule,
+
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [

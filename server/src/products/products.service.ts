@@ -24,30 +24,30 @@ export class ProductsService {
     return this.productRepository.exists({ where: { productName: name } });
   }
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    //check name
-    const isNameExist = await this.checkNameProExists(
-      createProductDto.productName,
-    );
+  // async create(createProductDto: CreateProductDto): Promise<Product> {
+  //   //check name
+  //   const isNameExist = await this.checkNameProExists(
+  //     createProductDto.productName,
+  //   );
 
-    if (isNameExist) {
-      throw new BadRequestException(
-        `tên sản phẩm đã tồn tại: ${createProductDto.productName}`,
-      );
-    }
+  //   if (isNameExist) {
+  //     throw new BadRequestException(
+  //       `tên sản phẩm đã tồn tại: ${createProductDto.productName}`,
+  //     );
+  //   }
 
-    const categoryId = await this.categoryService.findID(
-      +createProductDto.categoryID,
-    );
+  //   const categoryId = await this.categoryService.findID(
+  //     +createProductDto.categoryID,
+  //   );
 
-    // Tạo đối tượng Product
-    const createProduct = this.productRepository.create({
-      ...createProductDto,
-      categoryID: categoryId,
-    });
+  //   // Tạo đối tượng Product
+  //   const createProduct = this.productRepository.create({
+  //     ...createProductDto,
+  //     categoryID: categoryId,
+  //   });
 
-    return this.productRepository.save(createProduct);
-  }
+  //   return this.productRepository.save(createProduct);
+  // }
   async queryBuilder(alias: string) {
     return this.productRepository.createQueryBuilder(alias);
   }
@@ -60,7 +60,7 @@ export class ProductsService {
 
   async findID(id: number) {
     const findPro = await this.productRepository.findOne({
-      where: { productID: id },
+      where: { productId: id },
       relations: ['supplierID', 'categoryID'],
     });
 
@@ -71,48 +71,46 @@ export class ProductsService {
     return findPro;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
-    const findProId = await this.findID(id);
+  // async update(id: number, updateProductDto: UpdateProductDto) {
+  //   const findProId = await this.findID(id);
 
-    if (
-      updateProductDto.productName &&
-      findProId.productName != updateProductDto.productName
-    ) {
-      const isNameExist = await this.checkNameProExists(
-        updateProductDto.productName,
-      );
+  //   if (
+  //     updateProductDto.productName &&
+  //     findProId.productName != updateProductDto.productName
+  //   ) {
+  //     const isNameExist = await this.checkNameProExists(
+  //       updateProductDto.productName,
+  //     );
 
-      if (isNameExist) {
-        throw new BadRequestException(
-          `Tên sản phẩm đã tồn tại bạn vui lòng cập nhật tên khác: ${updateProductDto.productName}`,
-        );
-      }
-    }
+  //     if (isNameExist) {
+  //       throw new BadRequestException(
+  //         `Tên sản phẩm đã tồn tại bạn vui lòng cập nhật tên khác: ${updateProductDto.productName}`,
+  //       );
+  //     }
+  //   }
 
-    //cate
+  //   //cate
 
-    let cateID = findProId.categoryID; // Giữ nguyên category hiện tại nếu không có categoryID mới
+  //   let cateID = findProId.categoryID; // Giữ nguyên category hiện tại nếu không có categoryID mới
 
-    // Kiểm tra nếu categoryID được cung cấp
-    if (updateProductDto.categoryID) {
-      cateID = await this.categoryService.findID(+updateProductDto.categoryID);
-    }
+  //   // Kiểm tra nếu categoryID được cung cấp
+  //   if (updateProductDto.categoryID) {
+  //     cateID = await this.categoryService.findID(+updateProductDto.categoryID);
+  //   }
 
+  //   // Tạo đối tượng Product
+  //   const createProduct = this.productRepository.create({
+  //     ...findProId,
+  //     productName: updateProductDto.productName,
+  //     description: updateProductDto.description,
+  //     unit: updateProductDto.unit,
+  //     // importPrice: updateProductDto.importPrice,
+  //     // salePrice: updateProductDto.salePrice,
+  //     categoryID: cateID,
+  //   });
 
-
-    // Tạo đối tượng Product
-    const createProduct = this.productRepository.create({
-      ...findProId,
-      productName: updateProductDto.productName,
-      description: updateProductDto.description,
-      unit: updateProductDto.unit,
-      // importPrice: updateProductDto.importPrice,
-      // salePrice: updateProductDto.salePrice,
-      categoryID: cateID,
-    });
-
-    return this.productRepository.save(createProduct);
-  }
+  //   return this.productRepository.save(createProduct);
+  // }
 
   async remove(id: number) {
     const pro = await this.findID(id);

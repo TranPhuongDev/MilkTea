@@ -4,18 +4,17 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  ChangePassword,
+  CodeEmailDto,
+  CreateUserDto,
+} from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserResponseDto } from './dto/respone-user.dto';
 import { comparePasswordUtil, hashPasswordUtil } from 'src/utils/bcrypt';
-import {
-  ChangePassword,
-  CodeAuthDto,
-  CreateAuthDto,
-} from 'src/auths/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -33,36 +32,6 @@ export class UsersService {
     return this.usersRepository.exists({ where: { email } });
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const { userName, email, password, firstName, lastName } = createUserDto;
-
-    //check email
-    const isExist = await this.checkEmailExists(email);
-    if (isExist) {
-      throw new BadRequestException(`Email đã tồn tại: ${email}`);
-    }
-
-    // hash password
-    const hashPass = await hashPasswordUtil(password);
-    const user = await this.usersRepository.create({
-      userName,
-      email,
-      password: hashPass,
-      firstName,
-      lastName,
-    });
-
-    const savedUser = await this.usersRepository.save(user);
-
-    // Tạo đối tượng UserResponseDto với các trường mong muốn
-    const userResponse = new UserResponseDto();
-    userResponse.id = savedUser.id;
-    userResponse.userName = savedUser.userName;
-    userResponse.email = savedUser.email;
-
-    return userResponse;
-  }
-
   async findAll() {
     const user = await this.usersRepository.find();
     return user;
@@ -77,11 +46,12 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ userId: id });
+
     if (!user) {
-      throw new NotFoundException(` User with ID ${id} not found`);
+      throw new NotFoundException(` User id ${id} not found`);
     }
-    const { password, firstName, lastName } = updateUserDto;
+    const { password, firstName, lastName, dateOfBirth } = updateUserDto;
     // Toán tử spread (...) được sử dụng để sao chép tất cả các thuộc tính của user và updateUserDto vào một đối tượng mới.
     // Nếu có các thuộc tính trùng tên, các thuộc tính từ updateUserDto sẽ ghi đè các thuộc tính từ user.
     const hashPass = await hashPasswordUtil(password);
@@ -90,12 +60,13 @@ export class UsersService {
       password: hashPass,
       firstName,
       lastName,
+      dateOfBirth,
     });
     return this.usersRepository.save(userUpdate);
   }
 
   async removeUser(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ userId: id });
     if (!user) {
       throw new NotFoundException(` User with ID ${id} not found`);
     }
@@ -103,8 +74,8 @@ export class UsersService {
     return { status: HttpStatus.NOT_FOUND, 'đã xóa thành công': result };
   }
 
-  async registerUser(registerDto: CreateAuthDto) {
-    const { userName, email, password, firstName, lastName } = registerDto;
+  async registerUser(registerDto: CreateUserDto) {
+    const { username, email, password, firstName, lastName } = registerDto;
 
     //check email
     const isExist = await this.checkEmailExists(email);
@@ -118,7 +89,7 @@ export class UsersService {
     const codeId = uuidv4();
 
     const user = await this.usersRepository.save({
-      userName,
+      username,
       email,
       password: hashPass,
       firstName,
@@ -136,26 +107,26 @@ export class UsersService {
       subject: 'Acctive your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.userName ?? user.email,
+        name: user?.username ?? user.email,
         activationCode: codeId,
       },
     });
 
     // Tạo đối tượng UserResponseDto với các trường mong muốn
     const userResponse = new UserResponseDto();
-    userResponse.id = user.id;
-    userResponse.userName = user.userName;
+    userResponse.id = user.userId;
+    userResponse.username = user.username;
     userResponse.email = user.email;
 
     return userResponse;
   }
 
   // active account
-  async handleActive(codeAuthDto: CodeAuthDto) {
+  async handleActive(codeEmailDto: CodeEmailDto) {
     const user = await this.usersRepository.findOne({
       where: {
-        email: codeAuthDto.email,
-        codeId: codeAuthDto.codeId,
+        email: codeEmailDto.email,
+        codeId: codeEmailDto.codeId,
       },
     });
     if (!user) {
@@ -201,7 +172,7 @@ export class UsersService {
       subject: 'Acctive your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.userName ?? user.email,
+        name: user?.username ?? user.email,
         activationCode: codeId,
       },
     });
@@ -253,7 +224,7 @@ export class UsersService {
       subject: 'Forgot password your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.userName ?? user.email,
+        name: user?.username ?? user.email,
         activationCode: codeId,
       },
     });

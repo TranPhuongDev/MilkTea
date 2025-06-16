@@ -12,6 +12,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthsService) {
     super({
       usernameField: 'email', // Thay đổi tên trường thành email
+      // mặc định
+      // usernameField: 'userName',
       // passwordField: 'passWord',
     });
   }

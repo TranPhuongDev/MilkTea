@@ -10,16 +10,18 @@ import {
   Request,
 } from '@nestjs/common';
 import { AuthsService } from './auths.service';
-import {
-  ChangePassword,
-  CodeAuthDto,
-  CreateAuthDto,
-} from './dto/create-auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public } from 'src/decorator/customize';
 import { MailerService } from '@nestjs-modules/mailer';
+import {
+  ChangePassword,
+  CodeEmailDto,
+  CreateUserDto,
+} from 'src/users/dto/create-user.dto';
+import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
 
 @Controller('auth')
 export class AuthsController {
@@ -28,46 +30,63 @@ export class AuthsController {
     private readonly mailerService: MailerService,
   ) {}
 
-  @Post('sign-in')
   @Public()
+  @Post('sign-in')
+  @ApiOperation({ summary: 'Đăng nhập tài khoản' })
   @UseGuards(LocalAuthGuard)
   login(@Request() req) {
     return this.authsService.login(req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Public()
+  @ApiOperation({ summary: 'Đăng ký tài khoản mới' })
+  @ApiCreatedResponse({
+    description: 'Người dùng được tạo thành công',
+    type: User,
+  })
   @Post('register')
-  register(@Body() registerDto: CreateAuthDto) {
+  register(@Body() registerDto: CreateUserDto) {
     return this.authsService.register(registerDto);
   }
 
-  // active account
   @Public()
+  @ApiOperation({ summary: 'Kích hoạt tài khoản' })
+  @ApiCreatedResponse({
+    description: 'Kích hoạt thành công',
+    type: CodeEmailDto,
+  })
   @Post('check-code')
-  checkCode(@Body() codeAuthDto: CodeAuthDto) {
-    return this.authsService.checkCode(codeAuthDto);
+  checkCode(@Body() codeEmailDto: CodeEmailDto) {
+    return this.authsService.checkCode(codeEmailDto);
   }
 
-  @Post('retry-code')
   @Public()
+  @Post('retry-code')
+  @ApiOperation({ summary: 'Gửi lại mã code' })
   retryCodeId(@Body('email') email: string) {
     return this.authsService.retryCodeId(email);
   }
 
   @Public()
+  @ApiOperation({ summary: 'Thay đổi mật khẩu' })
+  @ApiCreatedResponse({
+    description: 'Kích hoạt thành công',
+    type: ChangePassword,
+  })
   @Patch('change-password')
   changePassword(@Body() changePassword: ChangePassword) {
     return this.authsService.changePassword(changePassword);
   }
 
   @Public()
+  @ApiOperation({ summary: 'Quên mật khẩu' })
   @Patch('forgot-password')
   forgotPassword(@Body('email') email: string) {
     return this.authsService.forgotPassword(email);
   }
 
   @Public()
+  @ApiOperation({ summary: 'Gửi email' })
   @Get('email')
   sendEmail() {
     this.mailerService.sendMail({
@@ -85,9 +104,9 @@ export class AuthsController {
   }
 
   // @UseGuards(AuthGuard('jwt')) // Sử dụng AuthGuard với strategy 'jwt' để bảo vệ endpoint này
+  @ApiOperation({ summary: 'Lấy thông tin người dùng' })
   @Get('me')
   async getMe(@Request() req) {
-    // `req.user` sẽ chứa thông tin người dùng đã được xác thực từ JwtStrategy
-    return { "user": req.user };
+    return { user: req.user };
   }
 }

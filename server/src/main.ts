@@ -21,10 +21,11 @@ async function bootstrap() {
 
   //api swagger
   const config = new DocumentBuilder()
-    .setTitle('Warehouse example')
-    .setDescription('The warehouse API description')
+    .setTitle('MilkTea example')
+    .setDescription('The milk tea API description')
     .setVersion('1.0')
-    .addTag('Warehoues')
+    .addTag('MilkTea')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
