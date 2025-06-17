@@ -48,7 +48,7 @@ export class CategoriesService {
   async findID(id: number) {
     const findCate = await this.categoryRepository.findOne({
       where: { categoryId: id },
-      relations: ['productID'],
+      relations: ['products'],
     });
 
     if (!findCate) throw new BadGatewayException('Không tìm thấy danh mục');

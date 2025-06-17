@@ -1,7 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Unique } from 'typeorm';
 
 export class CreateCategoryDto {
-  @IsNotEmpty({ message: 'categoryName không được để trống' })
+  @ApiProperty({ example: 'Cà Phê' })
+  @IsNotEmpty({ message: 'Danh mục không được để trống' })
   categoryName: string;
 }

@@ -15,25 +15,32 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Public } from 'src/decorator/customize';
 import { Request } from 'express';
+import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Public()
+  @ApiOperation({ summary: 'Tạo danh mục mới' })
+  @ApiCreatedResponse({
+    description: 'Tạo thành công',
+    type: CreateCategoryDto,
+  })
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
 
-  @Get()
   @Public()
+  @Get()
+  @ApiOperation({ summary: 'Lấy danh sách danh mục theo name và sort' })
   async findAll(@Req() req: Request) {
     const builder = await this.categoriesService.queryBuilder('categories');
 
-    if (req.query.s) {
-      builder.where('categories.categoryName LIKE :s', {
-        s: `%${req.query.s}%`,
+    if (req.query.name) {
+      builder.where('categories.categoryName LIKE :name', {
+        name: `%${req.query.name}%`,
       });
     }
 
@@ -43,28 +50,34 @@ export class CategoriesController {
       builder.orderBy('categories.categoryName', sort.toUpperCase());
     }
 
-    // const page: number = parseInt(req.query.page as any) || 1;
-    // const perPage = 2;
+    const page: number = parseInt(req.query.page as any) || 1;
+    const perPage = 2;
     const total = await builder.getCount();
 
-    // builder.offset((page - 1) * perPage).limit(perPage);
+    builder.offset((page - 1) * perPage).limit(perPage);
 
     return {
       categories: await builder.getMany(),
       total,
-      // page,
-      // last_page: Math.ceil(total / perPage),
+      page,
+      last_page: Math.ceil(total / perPage),
     };
   }
 
   @Public()
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy danh mục theo id' })
   findOne(@Param('id') id: number) {
     return this.categoriesService.findID(+id);
   }
 
   @Public()
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật danh mục' })
+  @ApiCreatedResponse({
+    description: 'Cập nhật thành công',
+    type: UpdateCategoryDto,
+  })
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -73,9 +86,10 @@ export class CategoriesController {
   }
 
   @Public()
+  @ApiOperation({ summary: 'Xóa người dùng theo id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.categoriesService.remove(+id);
   }
 }

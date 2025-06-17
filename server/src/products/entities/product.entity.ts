@@ -1,5 +1,6 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { DineInOrderItem } from 'src/dineinorderitems/entities/dineinorderitem.entity';
+import { ProductOption } from 'src/intermediatetable/product-option.entity';
 import { Option } from 'src/options/entities/option.entity';
 import { Review } from 'src/reviews/entities/review.entity';
 import {
@@ -51,13 +52,6 @@ export class Product {
   @OneToMany(() => DineInOrderItem, (item) => item.product)
   dineInOrderItems: DineInOrderItem[];
 
-  @ManyToMany(() => Option, (option) => option.products)
-  @JoinTable({
-    name: 'product_options',
-    joinColumns: [{ name: 'productId', referencedColumnName: 'productId' }],
-    inverseJoinColumns: [
-      { name: 'optionId', referencedColumnName: 'optionId' },
-    ],
-  })
-  options: Option[];
+  @OneToMany(() => ProductOption, (productOption) => productOption.product)
+  productOptions: ProductOption[];
 }

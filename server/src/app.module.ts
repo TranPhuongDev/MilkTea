@@ -25,9 +25,16 @@ import { DineInOrderItem } from './dineinorderitems/entities/dineinorderitem.ent
 import { DineInOrder } from './dineinorders/entities/dineinorder.entity';
 import { Option } from './options/entities/option.entity';
 import { Review } from './reviews/entities/review.entity';
+import { ConfigModule } from '@nestjs/config';
+import { CloudinaryModule } from './cloundinary/cloundinary.module';
+import { ProductOption } from './intermediatetable/product-option.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // để dùng process.env ở mọi nơi
+    }),
+    CloudinaryModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost', // Hoặc địa chỉ IP của máy chủ MySQL
@@ -45,12 +52,11 @@ import { Review } from './reviews/entities/review.entity';
         OptionValue,
         Option,
         Review,
+        ProductOption,
       ], // Đường dẫn đến các entity của bạn
       synchronize: true, // Chỉ sử dụng trong môi trường phát triển
       autoLoadEntities: true,
     }),
-
-    TypeOrmModule.forFeature([User, Category, Product]),
 
     UsersModule,
     AuthsModule,

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { OptionValue } from 'src/optionvalues/entities/optionvalue.entity';
+import { ProductOption } from 'src/intermediatetable/product-option.entity';
 
 @Entity('options')
 export class Option {
@@ -26,6 +27,6 @@ export class Option {
   @OneToMany(() => OptionValue, (optionValue) => optionValue.option)
   optionValues: OptionValue[];
 
-  @ManyToMany(() => Product, (product) => product.options)
-  products: Product[];
+  @OneToMany(() => ProductOption, (productOption) => productOption.option)
+  productOptions: ProductOption[];
 }
