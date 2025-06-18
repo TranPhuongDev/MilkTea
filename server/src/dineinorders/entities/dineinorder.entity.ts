@@ -5,11 +5,22 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+
+enum MethodPayment {
+  Cash = 'Tiền mặt',
+  Card = 'Thẻ tín dụng',
+  MobilePayment = 'Thanh toán di động',
+  Other = 'Khác',
+}
+
+enum OrderStatus {
+  Pending = 'Đang chờ',
+  Completed = 'Đã hoàn thành',
+}
 
 @Entity('dine_in_orders')
 export class DineInOrder {
@@ -19,16 +30,16 @@ export class DineInOrder {
   @Column({ nullable: false })
   tableId: number;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   orderTime: Date;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   totalAmount: number;
 
-  @Column({ length: 50, default: 'Đang chờ', nullable: false })
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Pending })
   orderStatus: string;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ type: 'enum', enum: MethodPayment, default: MethodPayment.Cash })
   paymentMethod: string;
 
   @Column({ type: 'text', nullable: true })

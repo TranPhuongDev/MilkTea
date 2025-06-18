@@ -1,6 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Category } from 'src/categories/entities/category.entity';
+
+enum statusPro {
+  Outofstock = 'Hết hàng',
+  Instock = 'Còn hàng',
+}
 
 export class UpdateProductDto {
   @IsOptional()
@@ -23,7 +34,12 @@ export class UpdateProductDto {
   avatar: string;
 
   @IsOptional()
-  @ApiProperty({ example: '1/0' })
+  @ApiPropertyOptional({
+    enum: statusPro,
+    description: 'Trạng thái ban đầu của đơn hàng',
+    example: statusPro.Instock,
+  })
+  @IsEnum(statusPro)
   status: string;
 
   @ApiProperty({ example: 'string' })

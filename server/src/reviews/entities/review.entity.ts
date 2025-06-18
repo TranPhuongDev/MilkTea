@@ -5,11 +5,9 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
 } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
-import { DineInOrder } from 'src/dineinorders/entities/dineinorder.entity';
 
 @Entity('reviews')
 export class Review {
@@ -28,7 +26,7 @@ export class Review {
   @Column({ type: 'text', nullable: true })
   comment: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   reviewDate: Date;
 
   @ManyToOne(() => Product, (product) => product.reviews)

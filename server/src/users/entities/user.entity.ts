@@ -3,9 +3,9 @@ import { Review } from 'src/reviews/entities/review.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 enum Role {
-  Admin,
-  User,
-  Guest,
+  Admin = 'Admin',
+  User = 'User',
+  Guest = 'Guest',
 }
 
 @Entity()

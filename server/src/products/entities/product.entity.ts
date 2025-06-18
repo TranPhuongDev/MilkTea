@@ -14,9 +14,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-enum status {
-  Outofstock,
-  Instock,
+enum statusPro {
+  Outofstock = 'Hết hàng',
+  Instock = 'Còn hàng',
 }
 
 @Entity()
@@ -36,7 +36,7 @@ export class Product {
   @Column()
   avatar: string;
 
-  @Column({ type: 'enum', enum: status, default: status.Instock })
+  @Column({ type: 'enum', enum: statusPro, default: statusPro.Instock })
   status: string;
 
   @Column({ default: false })

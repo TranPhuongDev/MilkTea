@@ -1,4 +1,17 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateTableDto } from './create-table.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateTableDto extends PartialType(CreateTableDto) {}
+export class UpdateTableDto {
+  @ApiProperty({ example: 'Bàn 1' })
+  @IsOptional()
+  tableName: string;
+
+  @ApiProperty({ example: 4, required: false })
+  @IsOptional()
+  capacity?: number;
+
+  @ApiProperty({ example: 'Khu A' })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Vị trí không được để trống' })
+  location: string;
+}

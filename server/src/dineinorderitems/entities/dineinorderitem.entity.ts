@@ -8,6 +8,15 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+
+enum ItemStatus {
+  Pending = 'Đang chờ',
+  Preparing = 'Đang pha chế',
+  Ready = 'Đã xong',
+  Served = 'Đã phục vụ',
+  Cancelled = 'Đã hủy',
+}
+
 @Entity('dine_in_order_items')
 export class DineInOrderItem {
   @PrimaryGeneratedColumn()
@@ -31,7 +40,12 @@ export class DineInOrderItem {
   @Column({ type: 'text', nullable: true })
   selectedOptions: string;
 
-  @Column({ length: 50, default: 'Đang chờ', nullable: false })
+  @Column({
+    type: 'enum',
+    enum: ItemStatus,
+    default: ItemStatus.Pending,
+    nullable: false,
+  })
   itemStatus: string;
 
   @Column({ type: 'text', nullable: true })
