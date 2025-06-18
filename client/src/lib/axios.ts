@@ -1,6 +1,7 @@
 import type { AxiosRequestConfig } from 'axios';
 
 import axios from 'axios';
+import { verify } from 'crypto';
 
 import { CONFIG } from 'src/global-config';
 
@@ -40,6 +41,8 @@ export const endpoints = {
     me: '/api/auth/me',
     signIn: '/api/auth/sign-in',
     signUp: '/api/auth/sign-up',
+    verify: '/api/auth/verify-email',
+    retrycode: '/api/auth/retry-code',
   },
   mail: {
     list: '/api/mail/list',

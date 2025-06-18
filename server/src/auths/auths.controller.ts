@@ -20,7 +20,7 @@ import {
   CodeEmailDto,
   CreateUserDto,
 } from 'src/users/dto/create-user.dto';
-import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 
 @Controller('auth')
@@ -44,7 +44,7 @@ export class AuthsController {
     description: 'Người dùng được tạo thành công',
     type: User,
   })
-  @Post('register')
+  @Post('sign-up')
   register(@Body() registerDto: CreateUserDto) {
     return this.authsService.register(registerDto);
   }
@@ -55,7 +55,7 @@ export class AuthsController {
     description: 'Kích hoạt thành công',
     type: CodeEmailDto,
   })
-  @Post('check-code')
+  @Post('verify-email')
   checkCode(@Body() codeEmailDto: CodeEmailDto) {
     return this.authsService.checkCode(codeEmailDto);
   }
@@ -63,6 +63,16 @@ export class AuthsController {
   @Public()
   @Post('retry-code')
   @ApiOperation({ summary: 'Gửi lại mã code' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+        },
+      },
+    },
+  })
   retryCodeId(@Body('email') email: string) {
     return this.authsService.retryCodeId(email);
   }

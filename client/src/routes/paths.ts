@@ -1,3 +1,4 @@
+import { verify } from 'crypto';
 import { kebabCase } from 'es-toolkit';
 
 import { _id, _postTitles } from 'src/_mock/assets';
@@ -56,6 +57,7 @@ export const paths = {
     jwt: {
       signIn: `${ROOTS.AUTH}/jwt/sign-in`,
       signUp: `${ROOTS.AUTH}/jwt/sign-up`,
+      verify: `${ROOTS.AUTH}/jwt/verify`,
     },
     firebase: {
       signIn: `${ROOTS.AUTH}/firebase/sign-in`,

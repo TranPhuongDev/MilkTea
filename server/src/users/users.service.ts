@@ -15,9 +15,10 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserResponseDto } from './dto/respone-user.dto';
 import { comparePasswordUtil, hashPasswordUtil } from 'src/utils/bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
+import { generateRandomNumber } from 'src/utils/helpers';
 
 @Injectable()
 export class UsersService {
@@ -83,7 +84,7 @@ export class UsersService {
   }
 
   async registerUser(registerDto: CreateUserDto) {
-    const { username, email, password, firstName, lastName } = registerDto;
+    const { email, password, firstName, lastName } = registerDto;
 
     //check email
     const isExist = await this.checkEmailExists(email);
@@ -94,10 +95,9 @@ export class UsersService {
     // hash password
     const hashPass = await hashPasswordUtil(password);
 
-    const codeId = uuidv4();
+    const codeId = generateRandomNumber();
 
     const user = await this.usersRepository.save({
-      username,
       email,
       password: hashPass,
       firstName,
@@ -115,7 +115,7 @@ export class UsersService {
       subject: 'Acctive your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.username ?? user.email,
+        name: user?.lastName ?? user.email,
         activationCode: codeId,
       },
     });
@@ -123,7 +123,6 @@ export class UsersService {
     // Tạo đối tượng UserResponseDto với các trường mong muốn
     const userResponse = new UserResponseDto();
     userResponse.id = user.userId;
-    userResponse.username = user.username;
     userResponse.email = user.email;
 
     return userResponse;
@@ -138,7 +137,7 @@ export class UsersService {
       },
     });
     if (!user) {
-      throw new BadRequestException('Thông tin User không tìm thấy');
+      throw new BadRequestException('Thông tin Email hoặc code không hợp lệ');
     }
 
     // check codeExpired code
@@ -165,7 +164,7 @@ export class UsersService {
     }
 
     //send Email
-    const codeId = uuidv4();
+    const codeId = generateRandomNumber();
 
     //update user
     await this.usersRepository.save({
@@ -180,7 +179,7 @@ export class UsersService {
       subject: 'Acctive your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.username ?? user.email,
+        name: user?.lastName ?? user.email,
         activationCode: codeId,
       },
     });
@@ -224,7 +223,7 @@ export class UsersService {
     }
 
     //send email
-    const codeId = uuidv4();
+    const codeId = generateRandomNumber();
 
     this.mailerService.sendMail({
       to: user.email, // list of receivers
@@ -232,7 +231,7 @@ export class UsersService {
       subject: 'Forgot password your account at @VP✔', // Subject line
       template: 'register',
       context: {
-        name: user?.username ?? user.email,
+        name: user?.lastName ?? user.email,
         activationCode: codeId,
       },
     });

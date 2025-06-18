@@ -58,7 +58,7 @@ export function JwtSignUpView() {
     firstName: 'Hello',
     lastName: 'Friend',
     email: 'hello@gmail.com',
-    password: '@2Minimal',
+    password: '123456',
   };
 
   const methods = useForm<SignUpSchemaType>({
@@ -81,7 +81,8 @@ export function JwtSignUpView() {
       });
       await checkUserSession?.();
 
-      router.refresh();
+      // router.refresh();
+      router.push(paths.auth.jwt.verify);
     } catch (error) {
       console.error(error);
       const feedbackMessage = getErrorMessage(error);

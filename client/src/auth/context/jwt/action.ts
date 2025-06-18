@@ -3,7 +3,7 @@
 import axios, { endpoints } from 'src/lib/axios';
 
 import { setSession } from './utils';
-import { JWT_STORAGE_KEY } from './constant';
+import { JWT_STORAGE_KEY, EMAIL } from './constant';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +42,36 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
 };
 
 /** **************************************
+ * Verify email
+ *************************************** */
+export const verifyEmail = async (email: string, codeId: string): Promise<void> => {
+  const params = { email, codeId };
+
+  try {
+    const res = await axios.post(endpoints.auth.verify, params);
+    if (!res.data) console.log('code hoặc email không hợp lệ');
+    sessionStorage.removeItem(EMAIL);
+  } catch (error) {
+    console.error('Error during verify email:', error);
+    throw error;
+  }
+};
+
+/** **************************************
+ * Resend email
+ *************************************** */
+
+export const resendEmail = async (email: string): Promise<void> => {
+  try {
+    const res = await axios.post(endpoints.auth.retrycode, { email });
+    console.log('res.data:', res.data);
+  } catch (error) {
+    console.error('Error during resend email:', error);
+    throw error;
+  }
+};
+
+/** **************************************
  * Sign up
  *************************************** */
 export const signUp = async ({
@@ -60,13 +90,15 @@ export const signUp = async ({
   try {
     const res = await axios.post(endpoints.auth.signUp, params);
 
-    const { accessToken } = res.data;
+    console.log('res.data:', res.data);
 
-    if (!accessToken) {
+    const { email } = res.data;
+
+    if (!email) {
       throw new Error('Access token not found in response');
     }
 
-    sessionStorage.setItem(JWT_STORAGE_KEY, accessToken);
+    sessionStorage.setItem(EMAIL, email);
   } catch (error) {
     console.error('Error during sign up:', error);
     throw error;

@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'admin.manager' })
-  @IsNotEmpty({ message: 'username không được để trống' })
-  username: string;
+  // @ApiProperty({ example: 'admin.manager' })
+  // @IsNotEmpty({ message: 'username không được để trống' })
+  // username: string;
 
   @IsNotEmpty({ message: 'email không được để trống' })
   @ApiProperty({ example: 'admin@example.com' })

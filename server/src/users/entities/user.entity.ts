@@ -13,8 +13,8 @@ export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
-  @Column()
-  username: string;
+  // @Column()
+  // username: string;
 
   @Column({ unique: true }) // Đảm bảo email là duy nhất
   email: string;
